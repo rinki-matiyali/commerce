@@ -1,0 +1,31 @@
+{% extends "auctions/layout.html" %} {% block body %}
+<div class="main-content">
+  <div class="listings-grid">
+    {% for listing in listings %}
+    <div class="listing-card">
+      <div class="listing-image">🎨</div>
+      <div class="listing-content">
+        <h3 class="listing-title">{{listing.name}}</h3>
+            <div class="data">
+                <p class="listing-description">{{listing.description}}</p>
+        <a href="{% url 'list' listing.name %}"><p class="listing-description">More details</p></a>
+            </div>
+        
+        <div class="listing-details">
+          <span class="current-bid">Current Bid: {{listing.starting_bid}}</span>
+          <span class="time-left">2h 15m left</span>
+        </div>
+        <div class="listing-actions">
+          <button class="bid-btn" onclick="placeBid(this)">Place Bid</button>
+          <button class="watchlist-btn" onclick="toggleWatchlist(this)">
+            ❤️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {% endfor%}
+  </div>
+</div>
+
+{% endblock %}

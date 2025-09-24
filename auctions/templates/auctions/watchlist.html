@@ -1,0 +1,41 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    
+<div class="watchlist-container">
+    <h2 class="watchlist-title">Watchlist</h2>
+    
+    {% if listings %}
+        <div class="watchlist-stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ listings|length }}</span>
+                <span class="stat-label">Items Watched</span>
+            </div>
+        </div>
+        
+        <div class="watchlist-grid">
+            {% for listing in listings %}
+                <div class="watchlist-item">
+                    <h3 class="listing-name">{{ listing.listing }}</h3>
+                    <div class="added-date">Added {{ listing.added_at|date:"M d, Y" }}</div>
+                    
+                    <div class="watchlist-actions">
+                        <a href="#" class="action-btn primary">👁️ View Details</a>
+                        <a href="#" class="action-btn">💰 Place Bid</a>
+                        <button class="action-btn remove">🗑️ Remove</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-watchlist">
+            <div class="empty-watchlist-icon">💔</div>
+            <div class="empty-watchlist-text">Your watchlist is empty</div>
+            <a href="{% url 'index' %}" class="empty-watchlist-link">
+                ⭐ Browse Active Listings
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

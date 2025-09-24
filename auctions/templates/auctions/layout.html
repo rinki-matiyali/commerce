@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Auctions{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static 'auctions/style.css' %}">
+    </head>
+    <body>
+        <div class="header-container">
+        <div class="header-content">
+            <div class="top-bar">
+                <div class="logo">
+                    <h1 class="heading">🏛️ Premium Auctions</h1>
+                </div>
+                <div class="user-status">
+                    {% if user.is_authenticated %}
+                        <span id="authStatus">Signed in as <strong>{{ user.username }}</strong></span>
+                    {% else %}
+                        <span id="authStatus"><strong>Not signed in.</strong></span>
+                     {% endif %}
+                    
+                </div>
+            </div>
+        <div class="nav-container">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}"> ⭐ Active Listings</a>
+                    </li>
+                   {% if user.is_authenticated %} 
+                    <li class="nav-item">
+                    <a class="nav-link" href="{% url 'listing' %}"> ➕ Add Listing</a>
+                
+                    </li>
+                    
+                    <li class="nav-item">
+                       <a class="nav-link" href="{% url 'watchlist' %}">❤️ Watchlist</a>
+                
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+                     {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Log In/Register</a>
+                </li>
+            {% endif %}
+                <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search for items, categories, or sellers...">
+                
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+    <div class="filters">
+            <button class="filter-btn active" onclick="filterItems('all')">All Items</button>
+            <button class="filter-btn" onclick="filterItems('art')">Art & Antiques</button>
+            <button class="filter-btn" onclick="filterItems('jewelry')">Jewelry</button>
+            <button class="filter-btn" onclick="filterItems('collectibles')">Collectibles</button>
+            <button class="filter-btn" onclick="filterItems('luxury')">Luxury Goods</button>
+        </div>
+        {% block body %}
+        
+        {% endblock %}
+    </body>
+</html>

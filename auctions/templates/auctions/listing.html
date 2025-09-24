@@ -1,0 +1,76 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+            
+<div class="listing-detail-container">
+    <h2 class="listing-title">{{item.name}}</h2>
+    
+    <div class="listing-detail-card">
+        <div class="listing-info">
+            <div class="info-item">
+                <div class="info-label">Listed By</div>
+                <div class="info-value">{{item.owner}}</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Starting Bid</div>
+                <div class="info-value starting-bid">${{item.starting_bid}}</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Description</div>
+                <div class="info-value description">{{item.description}}</div>
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <div class="comments-title">Comments</div>
+            <div class="comm">
+                <ul class="comments-list">
+                {% for comment in comments %}
+                <li class="comment-item">
+                    <div class="comment-author">{{comment.user.username}}</div>
+                    <div class="comment-text">{{comment.comment}}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            </div>
+            
+        </div>
+
+        <div class="action-forms">
+            <div class="form-section bid-form">
+                <div class="form-title">Place Your Bid</div>
+                <form action="{% url 'bid' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="number" name="bid_value" class="form-input" placeholder="Enter your bid amount">
+                    <input type="hidden" name="hidden" value="{{item.id}}">
+                    <input type="submit" value="Place Bid" class="form-btn">
+                </form>
+            </div>
+
+            <div class="form-section comment-form">
+                <div class="form-title">Add Comment</div>
+                <form action="{% url 'comment' %}" method="POST">
+                    {% csrf_token %}
+                    <textarea name="comment" class="form-input form-textarea" placeholder="Share your thoughts about this item..."></textarea>
+                    <input type="hidden" name="hidden" value="{{item.id}}">
+                    <input type="submit" value="Post Comment" class="form-btn">
+                </form>
+            </div>
+
+            <div class="form-section watchlist-form">
+                <div class="form-title">Save to Watchlist</div>
+                <form>
+                    <div class="watchlist-checkbox">
+                        <input type="checkbox" name="bid_open" id="bid_open">
+                        <label for="bid_open">Add to my watchlist</label>
+                    </div>
+                    <input type="submit" value="Add to Watchlist" class="form-btn">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
