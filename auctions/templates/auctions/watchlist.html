@@ -1,41 +1,53 @@
 {% extends "auctions/layout.html" %}
-
 {% block body %}
-    
-<div class="watchlist-container">
-    <h2 class="watchlist-title">Watchlist</h2>
-    
-    {% if listings %}
-        <div class="watchlist-stats">
-            <div class="stat-item">
-                <span class="stat-number">{{ listings|length }}</span>
-                <span class="stat-label">Items Watched</span>
-            </div>
-        </div>
-        
-        <div class="watchlist-grid">
-            {% for listing in listings %}
-                <div class="watchlist-item">
-                    <h3 class="listing-name">{{ listing.listing }}</h3>
-                    <div class="added-date">Added {{ listing.added_at|date:"M d, Y" }}</div>
-                    
-                    <div class="watchlist-actions">
-                        <a href="#" class="action-btn primary">👁️ View Details</a>
-                        <a href="#" class="action-btn">💰 Place Bid</a>
-                        <button class="action-btn remove">🗑️ Remove</button>
+
+<div class="container mt-4">
+
+    <h2>❤️ Your Watchlist</h2>
+    <hr>
+
+    {% if watchlist_items %}
+    <div class="row">
+
+        {% for entry in watchlist_items %}
+            {% with item=entry.listing %}
+
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card">
+
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" class="card-img-top" style="height:180px;object-fit:cover;">
+                    {% else %}
+                        <div class="d-flex justify-content-center align-items-center"
+                             style="height:180px;background:#eee;">📦</div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5>{{ item.name }}</h5>
+
+                        <a href="{% url 'list' item.id %}" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                            View Details
+                        </a>
+
+                        <form action="{% url 'watch_toggle' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="listing_id" value="{{ item.id }}">
+                            <button class="btn btn-danger btn-sm w-100">Remove</button>
+                        </form>
                     </div>
+
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+
+            {% endwith %}
+        {% endfor %}
+
+    </div>
+
     {% else %}
-        <div class="empty-watchlist">
-            <div class="empty-watchlist-icon">💔</div>
-            <div class="empty-watchlist-text">Your watchlist is empty</div>
-            <a href="{% url 'index' %}" class="empty-watchlist-link">
-                ⭐ Browse Active Listings
-            </a>
-        </div>
+        <div class="alert alert-info">Your watchlist is empty.</div>
     {% endif %}
+
 </div>
 
 {% endblock %}

@@ -1,0 +1,141 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<div class="container mt-4 profile-page">
+
+    <!-- PROFILE HEADER -->
+    <div class="profile-header">
+        <div class="profile-header-main">
+            <h2 class="profile-username">{{ profile_user.username }}</h2>
+            {% if profile_user.email %}
+                <p class="profile-email">{{ profile_user.email }}</p>
+            {% endif %}
+        </div>
+
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <span class="stat-number">{{ user_listings|length }}</span>
+                <span class="stat-label">Listings</span>
+            </div>
+            <div class="profile-stat">
+                <span class="stat-number">{{ user_bids|length }}</span>
+                <span class="stat-label">Bids</span>
+            </div>
+            <div class="profile-stat">
+                <span class="stat-number">{{ user_comments|length }}</span>
+                <span class="stat-label">Comments</span>
+            </div>
+            <div class="profile-stat">
+                <span class="stat-number">{{ auctions_won|length }}</span>
+                <span class="stat-label">Won</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTIONS GRID -->
+    <div class="profile-sections-grid">
+
+        <!-- MY LISTINGS -->
+        <div class="profile-section">
+            <h3>📦 My Listings</h3>
+            {% if user_listings %}
+                <ul class="profile-list">
+                    {% for item in user_listings %}
+                    <li class="profile-list-item">
+                        <div class="pli-main">
+                            <a href="{% url 'list' item.id %}" class="pli-title">
+                                {{ item.name }}
+                            </a>
+                            <span class="pli-status {% if item.bid_open %}open{% else %}closed{% endif %}">
+                                {% if item.bid_open %}Open{% else %}Closed{% endif %}
+                            </span>
+                        </div>
+                        <div class="pli-sub">
+                            Starting: ₹{{ item.starting_bid }}
+                            {% if item.ending_bid %} • Sold at ₹{{ item.ending_bid }}{% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="profile-empty">No listings created yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- BIDS PLACED -->
+        <div class="profile-section">
+            <h3>💰 Bids Placed</h3>
+            {% if user_bids %}
+                <ul class="profile-list">
+                    {% for bid in user_bids %}
+                    <li class="profile-list-item">
+                        <div class="pli-main">
+                            <a href="{% url 'list' bid.listing.id %}" class="pli-title">
+                                {{ bid.listing.name }}
+                            </a>
+                            <span class="pli-amount">₹{{ bid.amount }}</span>
+                        </div>
+                        <div class="pli-sub">
+                            {{ bid.created_at|date:"M d, Y H:i" }}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="profile-empty">You haven’t placed any bids yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- COMMENTS -->
+        <div class="profile-section">
+            <h3>💬 Comments</h3>
+            {% if user_comments %}
+                <ul class="profile-list">
+                    {% for c in user_comments %}
+                    <li class="profile-list-item">
+                        <div class="pli-main">
+                            <a href="{% url 'list' c.listing.id %}" class="pli-title">
+                                {{ c.listing.name }}
+                            </a>
+                        </div>
+                        <div class="pli-sub">
+                            “{{ c.comment|truncatechars:80 }}”
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="profile-empty">You haven’t commented yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- AUCTIONS WON -->
+        <div class="profile-section">
+            <h3>🏆 Auctions Won</h3>
+            {% if auctions_won %}
+                <ul class="profile-list">
+                    {% for a in auctions_won %}
+                    <li class="profile-list-item">
+                        <div class="pli-main">
+                            <a href="{% url 'list' a.id %}" class="pli-title">
+                                {{ a.name }}
+                            </a>
+                            <span class="pli-amount">₹{{ a.ending_bid }}</span>
+                        </div>
+                        <div class="pli-sub">
+                            From {{ a.owner.username }}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="profile-empty">No auctions won yet.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

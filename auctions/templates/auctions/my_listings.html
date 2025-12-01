@@ -1,0 +1,48 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+
+<div class="container mt-4">
+
+    <h2>📦 My Listings</h2>
+    <hr>
+
+    {% if listings %}
+    <div class="row">
+        {% for item in listings %}
+        <div class="col-md-4 col-lg-3 mb-4">
+            <div class="card">
+
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" class="card-img-top" style="height:180px;object-fit:cover;">
+                {% else %}
+                    <div class="d-flex justify-content-center align-items-center"
+                         style="height:180px;background:#eee;">📦</div>
+                {% endif %}
+
+                <div class="card-body">
+                    <h5>{{ item.name }}</h5>
+
+                    <p class="text-muted small">
+                        {% if item.bid_open %}
+                            <span class="text-success">Open</span>
+                        {% else %}
+                            <span class="text-danger">Closed</span>
+                        {% endif %}
+                    </p>
+
+                    <a href="{% url 'list' item.id %}" class="btn btn-outline-primary btn-sm w-100">
+                        View Listing
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+        <div class="alert alert-info">You haven't created any listings yet.</div>
+    {% endif %}
+</div>
+
+{% endblock %}

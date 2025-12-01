@@ -1,31 +1,110 @@
-{% extends "auctions/layout.html" %} {% block body %}
-<div class="main-content">
-  <div class="listings-grid">
-    {% for listing in listings %}
-    <div class="listing-card">
-      <div class="listing-image">🎨</div>
-      <div class="listing-content">
-        <h3 class="listing-title">{{listing.name}}</h3>
-            <div class="data">
-                <p class="listing-description">{{listing.description}}</p>
-        <a href="{% url 'list' listing.name %}"><p class="listing-description">More details</p></a>
-            </div>
-        
-        <div class="listing-details">
-          <span class="current-bid">Current Bid: {{listing.starting_bid}}</span>
-          <span class="time-left">2h 15m left</span>
-        </div>
-        <div class="listing-actions">
-          <button class="bid-btn" onclick="placeBid(this)">Place Bid</button>
-          <button class="watchlist-btn" onclick="toggleWatchlist(this)">
-            ❤️
-          </button>
-        </div>
-      </div>
+{% extends "auctions/layout.html" %}
+{% block body %}
+
+<div class="container mt-4">
+
+    <!-- CATEGORY FILTERS -->
+    <div class="mb-3">
+        {% for key, label in categories %}
+            <a href="?category={{ key }}{% if q %}&q={{ q }}{% endif %}"
+               class="btn btn-sm {% if selected_category == key %}btn-primary{% else %}btn-outline-secondary{% endif %} mr-1">
+               {{ label }}
+            </a>
+        {% endfor %}
     </div>
 
-    {% endfor%}
-  </div>
+    <!-- SORTING BAR -->
+    <div class="mb-3">
+        <label>Sort by:</label>
+
+        <a href="?sort=newest{% if selected_category %}&category={{ selected_category }}{% endif %}{% if q %}&q={{ q }}{% endif %}"
+           class="btn btn-sm {% if selected_sort == 'newest' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+           Newest
+        </a>
+
+        <a href="?sort=oldest{% if selected_category %}&category={{ selected_category }}{% endif %}{% if q %}&q={{ q }}{% endif %}"
+           class="btn btn-sm {% if selected_sort == 'oldest' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+           Oldest
+        </a>
+
+        <a href="?sort=highbid{% if selected_category %}&category={{ selected_category }}{% endif %}{% if q %}&q={{ q }}{% endif %}"
+           class="btn btn-sm {% if selected_sort == 'highbid' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+           Highest Bid
+        </a>
+
+        <a href="?sort=lowbid{% if selected_category %}&category={{ selected_category }}{% endif %}{% if q %}&q={{ q }}{% endif %}"
+           class="btn btn-sm {% if selected_sort == 'lowbid' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+           Lowest Bid
+        </a>
+    </div>
+
+    <!-- LISTINGS GRID -->
+    <div class="row">
+        {% for listing in listings %}
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+
+                {% if listing.image %}
+                    <img src="{{ listing.image.url }}" class="card-img-top" style="height:180px;object-fit:cover;">
+                {% else %}
+                    <div class="no-image d-flex justify-content-center align-items-center"
+                         style="height:180px;background:#eee;font-size:40px;">
+                        📦
+                    </div>
+                {% endif %}
+
+                <div class="card-body d-flex flex-column">
+                    <h5>{{ listing.name }}</h5>
+
+                    <p class="text-muted small">{{ listing.description|truncatechars:75 }}</p>
+
+                    {% with highest=listing.bids.all|dictsort:"-amount"|first %}
+                        {% if highest %}
+                            <p>Current Bid: ₹{{ highest.amount }}</p>
+                        {% else %}
+                            <p>Starting Bid: ₹{{ listing.starting_bid }}</p>
+                        {% endif %}
+                    {% endwith %}
+
+                    <a href="{% url 'list' listing.id %}" class="btn btn-outline-primary btn-sm mt-auto">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- PAGINATION -->
+    {% if page_obj.has_other_pages %}
+        <ul class="pagination justify-content-center">
+
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page_obj.previous_page_number }}&category={{ selected_category }}&sort={{ selected_sort }}&q={{ q }}">
+                       Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for i in page_obj.paginator.page_range %}
+                <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+                    <a class="page-link"
+                       href="?page={{ i }}&category={{ selected_category }}&sort={{ selected_sort }}&q={{ q }}">{{ i }}</a>
+                </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page_obj.next_page_number }}&category={{ selected_category }}&sort={{ selected_sort }}&q={{ q }}">
+                       Next
+                    </a>
+                </li>
+            {% endif %}
+
+        </ul>
+    {% endif %}
+
 </div>
 
 {% endblock %}

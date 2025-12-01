@@ -2,30 +2,37 @@ from django.db import models
 
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
-# HarryPotter 1234
-# RonWeasly 12345
-# Hermione Granger 12345
+
 
 
 class User(AbstractUser):
     def __str__(self):
         return f"{self.username}"
 
+CATEGORY_CHOICES = [
+    ("all", "All"),
+    ("art", "Art & Antiques"),
+    ("jewelry", "Jewelry"),
+    ("collectibles", "Collectibles"),
+    ("luxury", "Luxury Goods"),
+]
+
 class Listings(models.Model):
-    name = models.CharField()
-    # image = models.ImageField()
-    bid_open=models.BooleanField()
+    name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='listing_images/', null=True, blank=True)
+    bid_open = models.BooleanField(default=True)
     starting_bid = models.FloatField(default=0.0)
-    # Null = true allows null values to be stored in database
-    # blank=true  field is not required in forms 
-    ending_bid = models.FloatField(null=True,blank=True)
+    ending_bid = models.FloatField(null=True, blank=True)
     description = models.TextField()
-    owner = models.ForeignKey(User,on_delete=models.CASCADE,related_name="listings")
+    owner = models.ForeignKey('User', on_delete=models.CASCADE, related_name="listings")
     created_at = models.DateTimeField(auto_now_add=True)
-    winner =models.ForeignKey(User,null=True,blank=True,on_delete=models.SET_NULL,related_name="auctions_won")
+    winner = models.ForeignKey('User', null=True, blank=True, on_delete=models.SET_NULL, related_name="auctions_won")
+
+    # Category as ChoiceField
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default="art")
 
     def __str__(self):
-        return f"{self.name} by {self.owner.username} "
+        return f"{self.name} by {self.owner.username}"
     
 class Watchlist(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="watchlist_items")
@@ -60,3 +67,6 @@ class Notification(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="notifications")
     message = models.TextField()
     is_read = models.BooleanField(default = False)
+    # HarryPotter 1234
+# RonWeasly 12345
+# Hermione Granger 12345
